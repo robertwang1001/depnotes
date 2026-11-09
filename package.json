@@ -1,0 +1,103 @@
+{
+  "name": "depnotes",
+  "type": "module",
+  "version": "0.20.0",
+  "packageManager": "pnpm@10.23.0",
+  "description": "Local-first dependency upgrade release notes for JavaScript projects",
+  "author": "Robert Wang",
+  "license": "MIT",
+  "homepage": "https://github.com/robertwang1001/depnotes#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/robertwang1001/depnotes.git"
+  },
+  "bugs": {
+    "url": "https://github.com/robertwang1001/depnotes/issues"
+  },
+  "keywords": [
+    "dependencies",
+    "dependency-updates",
+    "dependency-management",
+    "release-notes",
+    "changelog",
+    "package-upgrades",
+    "npm",
+    "pnpm",
+    "yarn",
+    "bun"
+  ],
+  "exports": {
+    "./core": {
+      "types": "./dist/src/core.d.ts",
+      "import": "./dist/src/core.js"
+    }
+  },
+  "bin": {
+    "depnotes": "./dist/bin/cli.js"
+  },
+  "files": [
+    "README.md",
+    "dist/bin",
+    "dist/public",
+    "dist/src",
+    "scripts/setup-hooks.ts"
+  ],
+  "engines": {
+    "node": "24"
+  },
+  "scripts": {
+    "start": "pnpm build && node ./dist/bin/cli.js",
+    "test": "pnpm build && pnpm test:unit",
+    "pack:check": "pnpm test:package",
+    "test:e2e": "pnpm build && playwright test",
+    "bench:scan": "pnpm build && node ./dist/scripts/bench-scan.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:staged": "lint-staged",
+    "commitlint": "commitlint",
+    "check": "pnpm lint && pnpm typecheck && pnpm build && pnpm test:unit && pnpm test:package:built",
+    "coverage": "pnpm build && node --test --experimental-test-coverage dist/test/*.test.js",
+    "prepare": "node ./scripts/setup-hooks.ts",
+    "build": "node scripts/build.ts",
+    "typecheck": "tsc --noEmit",
+    "prepack": "pnpm build",
+    "test:unit": "node --test dist/test/*.test.js",
+    "test:package": "pnpm build && pnpm test:package:built",
+    "test:package:built": "node ./dist/scripts/pack-smoke.js"
+  },
+  "dependencies": {
+    "markdown-it": "^15.0.3",
+    "semver": "^7.7.3",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^10.0.0",
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@playwright/test": "^1.56.0",
+    "@types/markdown-it": "^14.2.0",
+    "@types/node": "^24.19.2",
+    "@types/semver": "^7.8.0",
+    "eslint": "^10.14.0",
+    "jiti": "^2.7.0",
+    "lint-staged": "^17.6.0",
+    "simple-git-hooks": "^2.13.1",
+    "typescript": "^6.0.3"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged",
+    "commit-msg": "pnpm exec commitlint --edit \"$1\""
+  },
+  "lint-staged": {
+    "*.{ts,mts,cts}": "eslint --fix"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  }
+}

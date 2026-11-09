@@ -1,0 +1,56 @@
+name: Release Please / npm publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: node
+
+  publish:
+    name: Verify release and publish to npm
+    needs: release
+    if: needs.release.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write # npm Trusted Publishing via OIDC; no publish token stored
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.tag_name }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.23.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      # Node 24's bundled npm version may lag npm Trusted Publishing requirements.
+      - name: Ensure npm supports OIDC
+        run: npm install --global npm@^11
+      - name: Publish (trusted publisher)
+        run: npm publish --access public --provenance

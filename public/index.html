@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="Review dependency updates and their release notes before upgrading.">
+  <title>Depnotes · Dependency upgrade review</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#list">Skip to updates</a>
+  <main class="shell">
+    <header class="hero">
+      <div><div class="brand"><img class="logo" src="/logo.svg" alt="" width="34" height="34"><span>depnotes</span><span class="version-tag">0.19</span></div>
+        <h1>Review before you upgrade.</h1><p class="subtitle">A clear view of dependency changes, release notes, and migration guidance.</p>
+      </div>
+      <div class="header-actions"><label class="theme-quick">Theme <select id="theme-quick" aria-label="Color theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label><button id="diagnostics-open" class="secondary" type="button" aria-haspopup="dialog">Diagnostics</button><button id="settings-open" class="secondary" type="button" aria-haspopup="dialog">⚙ Settings</button><button id="refresh" class="primary" type="button"><span aria-hidden="true">↻</span> Rescan</button></div>
+    </header>
+    <section class="overview" aria-label="Project summary">
+      <div class="project-line"><span class="eyebrow">CURRENT PROJECT</span><strong id="project">Loading…</strong><small id="project-path"></small><div id="toolchain" class="toolchain" aria-label="Project toolchain"></div><small id="policy" class="policy"></small><small id="scan-meta" class="policy" aria-live="polite"></small></div>
+      <div class="stats" id="stats" aria-live="polite"><div class="stat skeleton"></div><div class="stat skeleton"></div><div class="stat skeleton"></div></div>
+    </section>
+    <div id="scan-progress" class="scan-progress" role="status" aria-live="polite" hidden><span id="scan-progress-label">Scanning…</span><progress id="scan-progress-bar" max="1" value="0"></progress></div>
+    <div id="global-message" role="status" aria-live="polite" class="message" hidden></div>
+    <div class="workspace-layout">
+      <section class="panel catalog" aria-label="Available updates">
+        <div class="panel-heading"><div><h2><span id="view-label">Available updates</span> <span id="result-count" class="count"></span></h2><p>Choose a package to inspect its changes.</p></div></div>
+        <div class="controls">
+          <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search packages…" aria-label="Search packages" autocomplete="off" spellcheck="false"></label>
+          <div class="select-row">
+            <label><span>Workspace</span><select id="workspace" aria-label="Filter workspace"><option value="all">All workspaces</option></select></label>
+            <label><span>Update type</span><select id="filter" aria-label="Filter update type"><option value="all">All updates</option><option value="major">Major</option><option value="minor">Minor</option><option value="patch">Patch</option></select></label>
+            <label><span>Sort</span><select id="sort" aria-label="Sort dependencies"><option value="risk">Major first</option><option value="name">Name A–Z</option><option value="workspace">Workspace</option></select></label>
+          </div>
+        </div>
+        <div class="batch-toolbar"><span id="batch-count">0 selected</span><button id="batch-clear" class="secondary" type="button" disabled>Clear</button><button id="batch-preview" class="primary" type="button" disabled>Review selected upgrades</button></div>
+        <div id="list" class="package-list" tabindex="-1" aria-label="Dependencies" aria-busy="true"><div class="placeholder">Checking installed dependencies…</div></div>
+        <div class="list-footer"><span id="visible-count" class="subtle"></span><button id="load-more" type="button" class="secondary" hidden>Show more</button></div>
+      </section>
+      <section id="detail" class="panel detail" aria-label="Release notes" aria-live="polite"><div class="empty-state"><div class="empty-icon" aria-hidden="true">≡</div><h2>Nothing selected yet</h2><p>Choose an update to review version changes and source links.</p></div></section>
+    </div>
+    <footer>Upgrades require your confirmation · Review the Git diff and run tests after upgrading.</footer>
+  </main>
+  <dialog id="upgrade-dialog" aria-labelledby="upgrade-title">
+    <div class="upgrade-dialog-body">
+      <h2 id="upgrade-title">Confirm dependency upgrade</h2>
+      <p id="upgrade-description"></p><div id="upgrade-items" class="batch-preview-items"></div>
+      <pre id="upgrade-command" class="upgrade-command"></pre>
+      <div id="upgrade-git" class="git-safety" role="status"></div>
+      <label id="upgrade-git-consent" class="git-consent" hidden><input id="upgrade-git-ack" type="checkbox"><span>I understand that uncommitted work could be mixed with upgrade changes, and I have reviewed my Git working tree.</span></label>
+      <p class="upgrade-warning">Review <code>git status</code> and stage your changes (<code>git add</code>) if appropriate, then commit them to create a reliable recovery point. Staging alone does not create a backup. Depnotes never runs Git add, commit, reset, or stash. Package-manager lifecycle scripts may execute.</p>
+      <div id="upgrade-result" class="message" role="status" aria-live="polite" hidden></div>
+      <div class="settings-actions"><button id="upgrade-cancel" class="secondary" type="button">Cancel</button><button id="upgrade-confirm" class="primary" type="button">Upgrade now</button></div>
+    </div>
+  </dialog>
+  <dialog id="diagnostics-dialog" aria-labelledby="diagnostics-title">
+    <div class="diagnostics-body"><div class="settings-heading"><div><h2 id="diagnostics-title">Scan diagnostics</h2><p>Per-package timing, failures, and cache activity for the last scan.</p></div><button id="diagnostics-close" type="button" class="secondary">Close</button></div><div id="diagnostics-content"></div></div>
+  </dialog>
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <form id="settings-form" novalidate>
+      <div class="settings-heading"><div><h2 id="settings-title">Settings</h2><p>Choose user-wide settings (recommended), or explicitly override this project.</p></div><button id="settings-close" type="button" class="secondary" aria-label="Close settings">✕</button></div>
+      <label class="setting-field"><span>Save settings to</span><select id="settings-scope"><option value="user">My user settings (all projects)</option><option value="project">This project only</option></select></label><p class="settings-file" id="settings-path"></p>
+      <label class="setting-field"><span>Minimum release age <small id="age-source"></small></span><div class="setting-inline"><input id="setting-age" type="number" step="0.5" min="0" max="365" required><span>days</span></div><small>0 disables age filtering. Stored in minutes for pnpm compatibility.</small></label>
+      <label class="setting-field"><span>Release-age exclusions <small id="exclude-source"></small></span><textarea id="setting-excludes" rows="3" placeholder="@myorg/*&#10;react"></textarea><small>One package name or wildcard pattern per line.</small></label>
+      <label class="setting-field"><span>Appearance</span><select id="setting-theme"><option value="system">Follow system</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <label class="setting-field"><span>Scan cache duration</span><div class="setting-inline"><input id="setting-scan-cache" type="number" step="1" min="0" max="3600" required><span>seconds</span></div></label>
+      <label class="setting-field"><span>Release-note cache duration</span><div class="setting-inline"><input id="setting-notes-cache" type="number" step="1" min="0" max="3600" required><span>seconds</span></div></label>
+      <p class="settings-hint">Save to your user configuration by default. A project override is created only when you choose it. Package-manager files are always read-only. Reset removes overrides at the selected scope.</p>
+      <div id="settings-status" class="message" hidden role="status" aria-live="polite"></div>
+      <div class="settings-actions"><button id="settings-defaults" type="button" class="secondary">Reset selected scope</button><button id="settings-save" type="submit" class="primary">Save settings</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

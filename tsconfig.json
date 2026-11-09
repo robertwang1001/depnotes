@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "rootDir": ".",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": [
+      "node"
+    ],
+    "strict": true,
+    "declaration": true,
+    "inlineSources": true,
+    "noEmitOnError": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "bin/**/*.ts",
+    "public/**/*.ts",
+    "test/**/*.ts",
+    "e2e/**/*.ts",
+    "scripts/**/*.ts",
+    "*.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
