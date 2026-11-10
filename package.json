@@ -2,7 +2,7 @@
   "name": "depnotes",
   "type": "module",
   "version": "1.1.0",
-  "packageManager": "pnpm@10.23.0",
+  "packageManager": "pnpm@10.34.9",
   "description": "Local-first dependency upgrade release notes for JavaScript projects",
   "author": "Robert Wang",
   "license": "MIT",
@@ -67,14 +67,14 @@
   },
   "dependencies": {
     "markdown-it": "^15.0.3",
-    "semver": "^7.7.3",
-    "yaml": "^2.8.1"
+    "semver": "^7.8.6",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^10.0.0",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
-    "@playwright/test": "^1.56.0",
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/cli": "^4.3.5",
     "@types/markdown-it": "^14.2.0",
     "@types/node": "^24.19.2",
@@ -82,7 +82,7 @@
     "eslint": "^10.14.0",
     "jiti": "^2.7.0",
     "lint-staged": "^17.6.0",
-    "simple-git-hooks": "^2.13.1",
+    "simple-git-hooks": "^2.14.0",
     "tailwindcss": "^4.3.5",
     "typescript": "^6.0.3"
   },
