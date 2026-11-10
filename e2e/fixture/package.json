@@ -1,9 +1,9 @@
 {
   "name": "depnotes-ui-fixture",
   "private": true,
-  "packageManager": "npm@10.9.0",
+  "packageManager": "npm@10.9.10",
   "dependencies": {
-    "react": "^19.0.0",
+    "react": "^19.3.1",
     "tiny-dep": "^1.0.0"
   }
 }
