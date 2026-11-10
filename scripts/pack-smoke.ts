@@ -51,6 +51,7 @@ try {
     'dist/public/dom.js',
     'dist/public/format.js',
     'dist/public/notes.js',
+    'dist/public/style.css',
   ])
     assert.ok(files.has(required), `Package is missing ${required}`)
   assert.ok(![...files].some(file => /^(?:src|test|e2e|dist\/test|dist\/e2e)\//.test(file)), 'Package contains development fixtures or tests')
@@ -73,6 +74,9 @@ try {
   ], temporary)
 
   const installedRoot = path.join(temporary, 'node_modules/depnotes')
+  const stylesheet = await readFile(path.join(installedRoot, 'dist/public/style.css'), 'utf8')
+  assert.match(stylesheet, /\.tw\\:flex\{/)
+  assert.doesNotMatch(stylesheet, /@apply\s/)
   const sourceMap = JSON.parse(await readFile(path.join(installedRoot, 'dist/src/core.js.map'), 'utf8')) as { sourcesContent?: string[] }
   assert.ok(sourceMap.sourcesContent?.[0]?.includes('scanProject'), 'Installed source map must include the TypeScript source')
   const executable = path.join(installedRoot, 'dist/bin/cli.js')

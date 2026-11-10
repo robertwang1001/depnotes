@@ -1,0 +1,6 @@
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" layer(utilities) prefix(tw) source(none);
+@import "../public/style.css";
+@source "../public/index.html";
+@source "../public/app.ts";
+@source "../public/notes.ts";

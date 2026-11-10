@@ -2,10 +2,10 @@ import type { DashboardNotes } from './types.js'
 import { element as $, create, external } from './dom.js'
 
 export function notice(text: string, kind = '') {
-  return create('div', `notice ${kind}`, text)
+  return create('div', `notice tw:my-3 tw:rounded-xl tw:border tw:px-4 tw:py-3 tw:text-sm tw:leading-relaxed ${kind}`, text)
 }
 function section(title: string) {
-  const section = create('section', 'section')
+  const section = create('section', 'section tw:border-t tw:border-(--border) tw:py-5 tw:[&_h3]:mb-3 tw:[&_h3]:text-base tw:[&_h3]:font-semibold tw:[&_p]:my-2 tw:[&_p]:text-sm tw:[&_p]:text-(--muted) tw:[&_details]:my-2 tw:[&_details]:rounded-xl tw:[&_details]:border tw:[&_details]:border-(--border) tw:[&_details]:bg-(--subtle) tw:[&_details]:p-4 tw:[&_summary]:cursor-pointer tw:[&_summary]:text-sm tw:[&_summary]:font-semibold')
   section.append(create('h3', '', title))
   return section
 }
@@ -16,7 +16,7 @@ function appendNote(container: HTMLElement, title: string, html: string, subtitl
   details.open = open
   details.append(create('summary', '', title))
   if (subtitle)
-    details.append(create('div', 'version-note', subtitle))
+    details.append(create('div', 'version-note tw:mt-2 tw:text-xs tw:text-(--muted)', subtitle))
   const content = create('div', 'markdown-body')
   const render = () => {
     if (content.dataset.rendered)
@@ -37,7 +37,7 @@ function appendNote(container: HTMLElement, title: string, html: string, subtitl
 export function showNotes(data: DashboardNotes) {
   const pane = $('detail')
   pane.querySelector('.loading-panel')?.remove()
-  const summary = create('div', 'section')
+  const summary = create('div', 'section tw:border-t tw:border-(--border) tw:py-5 tw:[&_h3]:mb-3 tw:[&_h3]:text-base tw:[&_h3]:font-semibold tw:[&_p]:my-2 tw:[&_p]:text-sm tw:[&_p]:text-(--muted) tw:[&_details]:my-2 tw:[&_details]:rounded-xl tw:[&_details]:border tw:[&_details]:border-(--border) tw:[&_details]:bg-(--subtle) tw:[&_details]:p-4 tw:[&_summary]:cursor-pointer tw:[&_summary]:text-sm tw:[&_summary]:font-semibold')
   summary.append(create('h3', '', 'Release-note coverage: unverified'), create('p', '', data.message || 'Coverage cannot be guaranteed.'))
   pane.append(summary)
   for (const warning of (data.warnings || []))

@@ -29,5 +29,5 @@ test('theme options and strongly differentiated errors', () => {
   assert.match(html, /id="setting-theme"/)
   assert.match(css, /prefers-color-scheme:light/)
   assert.match(css, /\.message\.error/)
-  assert.match(css, /\.policy-value/)
+  assert.match(app, /policy-value/)
 })

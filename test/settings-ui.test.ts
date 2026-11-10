@@ -12,15 +12,15 @@ const [html, css, js, format] = await Promise.all([
 ].map(x => fs.readFile(new URL(x, base), 'utf8')))
 test('settings dialog accessible and linked from header', () => {
   assert.match(html, /id="settings-open"/)
-  assert.match(html, /<dialog id="settings-dialog" aria-labelledby="settings-title"/)
+  assert.match(html, /<dialog[^>]*id="settings-dialog"[^>]*aria-labelledby="settings-title"/)
   assert.match(html, /id="settings-form"/)
   assert.match(html, /id="settings-defaults"/)
 })
 test('viewport shell and independent panel scrollers', () => {
   assert.match(css, /height:100dvh/)
-  assert.match(css, /html,body\{height:100%;overflow:hidden\}/)
-  assert.match(css, /\.package-list\{[^}]*overflow-y:auto/)
-  assert.match(css, /\.detail\{[^}]*overflow-y:auto/)
+  assert.match(html, /tw:lg:overflow-y-auto/)
+  assert.match(html, /tw:lg:overflow-y-auto/)
+  assert.match(html, /tw:overflow-y-auto/)
 })
 test('human readable times and settings persistence', () => {
   matchesSource(format, /Intl\.RelativeTimeFormat/)

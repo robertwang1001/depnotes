@@ -32,7 +32,7 @@ test('dashboard uses safe text rendering and incremental rows', async () => {
 })
 test('responsive and reduced-motion styles present', async () => {
   const css = await readFile(new URL('style.css', base), 'utf8')
-  assert.match(css, /@media\(max-width:600px\)/)
+  assert.match(css, /@media\s*\(min-width:\s*64rem\)/)
   assert.match(css, /prefers-reduced-motion/)
 })
 test('first release note is opened, status counts drill down and release policy is shown', async () => {

@@ -23,7 +23,7 @@ const risk: Record<string, number> = { major: 0, minor: 1, patch: 2 }
 function message(value: string, kind = 'info') {
   const el = $('global-message')
   el.textContent = value
-  el.className = `message ${kind}`
+  el.className = `message tw:rounded-xl tw:border tw:px-4 tw:py-3 tw:text-sm tw:leading-relaxed ${kind}`
   el.hidden = !value
 }
 function filteredItems() {
@@ -61,14 +61,14 @@ function renderList() {
   const visible = all.slice(0, state.shown)
   const fragment = document.createDocumentFragment()
   for (const item of visible) {
-    const row = create('div', 'package')
+    const row = create('div', 'package tw:block tw:w-full tw:border-0 tw:border-b tw:border-solid tw:border-(--border) tw:bg-transparent tw:px-5 tw:py-4 tw:text-left tw:text-inherit tw:transition-colors tw:hover:bg-(--hover) tw:aria-[current=true]:bg-(--selected) tw:aria-[current=true]:shadow-[inset_3px_0_var(--accent)]')
     row.tabIndex = 0
     row.setAttribute('role', 'button')
     row.setAttribute('aria-current', item === state.selected
       ? 'true'
       : 'false')
     if (item.status === 'outdated') {
-      const chooser = create('label', 'selection-label')
+      const chooser = create('label', 'selection-label tw:mb-2 tw:inline-flex tw:cursor-pointer tw:items-center tw:gap-2 tw:text-xs tw:text-(--muted) tw:[&_input]:m-0 tw:[&_input]:size-4 tw:[&_input]:accent-(--accent)')
       const checkbox = create('input')
       checkbox.type = 'checkbox'
       checkbox.checked = state.upgradeSelections.has(selectionKey(item))
@@ -85,9 +85,9 @@ function renderList() {
       chooser.append(checkbox, create('span', '', 'Select upgrade'))
       row.append(chooser)
     }
-    const head = create('div', 'package-header')
-    head.append(create('span', 'package-name', item.name), create('span', `badge ${item.kind || item.status}`, item.kind || item.status))
-    row.append(head, create('div', 'package-sub', `${item.current || '—'} → ${item.latest || item.latestAvailable || '—'}`), create('div', 'package-sub', `${item.workspaceName} · ${item.section}${item.source?.startsWith('manifest')
+    const head = create('div', 'package-header tw:flex tw:items-center tw:justify-between tw:gap-2')
+    head.append(create('span', 'package-name tw:text-sm tw:font-bold tw:break-all', item.name), create('span', `badge ${item.kind || item.status}`, item.kind || item.status))
+    row.append(head, create('div', 'package-sub tw:mt-1 tw:text-xs tw:leading-relaxed tw:break-all tw:text-(--muted)', `${item.current || '—'} → ${item.latest || item.latestAvailable || '—'}`), create('div', 'package-sub tw:mt-1 tw:text-xs tw:leading-relaxed tw:break-all tw:text-(--muted)', `${item.workspaceName} · ${item.section}${item.source?.startsWith('manifest')
       ? ' · estimated baseline'
       : ''}`))
     if (item.message && item.status !== 'outdated')
@@ -108,7 +108,7 @@ function renderList() {
     fragment.append(row)
   }
   if (!all.length)
-    fragment.append(create('div', 'placeholder', state.items.length ? 'No matching dependencies for this view. Try adjusting the filters.' : 'No dependencies to display.'))
+    fragment.append(create('div', 'placeholder tw:p-6 tw:text-sm tw:text-(--muted)', state.items.length ? 'No matching dependencies for this view. Try adjusting the filters.' : 'No dependencies to display.'))
   list.replaceChildren(fragment)
   updateBatchToolbar()
   list.setAttribute('aria-busy', 'false')
@@ -138,11 +138,11 @@ function updateStats(data: ScanResult) {
   if (manager.invokedVersion)
     pills.push(['Invoked manager', manager.invokedVersion])
   for (const [label, value] of pills) {
-    const chip = create('span', 'toolchain-chip')
+    const chip = create('span', 'toolchain-chip tw:inline-flex tw:items-center tw:gap-2 tw:inline-flex tw:items-center tw:gap-2 tw:rounded-lg tw:border tw:border-(--border) tw:bg-(--subtle) tw:px-2 tw:py-1 tw:text-xs tw:[&_b]:font-semibold tw:[&_b]:text-(--accent)')
     chip.append(create('b', '', label), create('span', '', value))
     toolchain.append(chip)
   }
-  const info = create('small', 'toolchain-source', `Manager detected by ${manager.detectedBy || 'fallback'} · ${manager.version ? 'Version is declared, not verified installed' : 'No declared manager version'}${manager.name === 'yarn' || manager.name === 'bun'
+  const info = create('small', 'toolchain-source tw:basis-full tw:text-xs tw:text-(--muted)', `Manager detected by ${manager.detectedBy || 'fallback'} · ${manager.version ? 'Version is declared, not verified installed' : 'No declared manager version'}${manager.name === 'yarn' || manager.name === 'bun'
     ? ' · Installed baselines estimated'
     : ''}`)
   toolchain.append(info)
@@ -158,7 +158,7 @@ function updateStats(data: ScanResult) {
     : ''
   $('scan-meta').title = scanned?.exact || ''
   const config = data.config
-  $('policy').replaceChildren(create('span', '', 'Minimum release age: '), create('strong', 'policy-value', duration(Number(config.minimumReleaseAge ?? 4320))), create('span', '', ` · ${config.source || 'default'}`))
+  $('policy').replaceChildren(create('span', '', 'Minimum release age: '), create('strong', 'policy-value tw:rounded-md tw:bg-(--hover) tw:px-2 tw:py-1 tw:text-xs tw:font-bold tw:text-(--accent)', duration(Number(config.minimumReleaseAge ?? 4320))), create('span', '', ` · ${config.source || 'default'}`))
   applyTheme(config.theme || 'system')
   const counts = {
     outdated: state.items.filter(x => x.status === 'outdated').length,
@@ -185,7 +185,7 @@ function updateStats(data: ScanResult) {
   ]
   const frag = document.createDocumentFragment()
   for (const [label, value, view, kind] of definitions) {
-    const button = create('button', 'stat stat-button')
+    const button = create('button', 'stat stat-button tw:grid tw:min-w-24 tw:gap-1 tw:rounded-xl tw:border tw:border-transparent tw:bg-transparent tw:p-3 tw:text-left tw:text-inherit tw:transition-colors tw:hover:bg-(--hover) tw:aria-pressed:border-(--border) tw:aria-pressed:bg-(--selected) tw:[&_strong]:text-2xl tw:[&_strong]:font-bold tw:[&_span]:text-xs tw:[&_span]:text-(--muted)')
     button.type = 'button'
     button.setAttribute('aria-label', `Show ${value} ${label.toLowerCase()} dependencies`)
     button.dataset.view = view
@@ -223,8 +223,8 @@ function syncView() {
   $('filter').disabled = state.statusFilter !== 'outdated'
 }
 function emptyDetail() {
-  const empty = create('div', 'empty-state')
-  empty.append(create('div', 'empty-icon', '≡'), create('h2', '', 'Nothing selected yet'), create('p', '', 'Choose an update to review its release notes.'))
+  const empty = create('div', 'empty-state tw:mx-auto tw:my-20 tw:max-w-80 tw:text-center tw:[&_h2]:mb-2 tw:[&_h2]:text-lg tw:[&_h2]:font-semibold tw:[&_p]:text-sm tw:[&_p]:leading-relaxed tw:[&_p]:text-(--muted)')
+  empty.append(create('div', 'empty-icon tw:mx-auto tw:mb-5 tw:grid tw:size-14 tw:place-items-center tw:rounded-2xl tw:bg-(--hover) tw:text-3xl tw:text-(--accent)', '≡'), create('h2', '', 'Nothing selected yet'), create('p', '', 'Choose an update to review its release notes.'))
   $('detail').replaceChildren(empty)
 }
 function applyScan(data: ScanResult) {
@@ -378,16 +378,16 @@ async function selectItem(item: DependencyItem) {
   renderList()
   const pane = $('detail')
   pane.replaceChildren()
-  const head = create('div', 'detail-top')
+  const head = create('div', 'detail-top tw:flex tw:items-center tw:justify-between tw:gap-3')
   head.append(create('h2', '', item.name), create('span', `badge ${item.kind || item.status}`, item.kind || item.status))
-  pane.append(head, create('div', 'version-line', `${item.current || '—'} → ${item.latest || item.latestAvailable || '—'} · ${item.workspaceName}${item.source?.startsWith('manifest')
+  pane.append(head, create('div', 'version-line tw:mt-2 tw:text-sm tw:text-(--muted)', `${item.current || '—'} → ${item.latest || item.latestAvailable || '—'} · ${item.workspaceName}${item.source?.startsWith('manifest')
     ? ' · baseline estimated from manifest'
     : ''}`))
   if (item.status !== 'outdated') {
     pane.append(notice(item.message || `This package was ${item.status}.`, 'warning'))
     return
   }
-  const sources = create('div', 'source-links')
+  const sources = create('div', 'source-links tw:flex tw:flex-wrap tw:gap-3')
   sources.append(external('npm ↗', `https://www.npmjs.com/package/${encodeURIComponent(item.name)}`))
   if (item.repo)
     sources.append(external('GitHub ↗', `https://github.com/${item.repo}`))
@@ -395,7 +395,7 @@ async function selectItem(item: DependencyItem) {
   if (item.compatible)
     pane.append(notice(`Highest available version matching ${item.range}: ${item.compatible}`))
   if (item.status === 'outdated') {
-    const action = create('button', 'primary upgrade-action', `Upgrade to ${item.latest}`)
+    const action = create('button', 'primary upgrade-action tw:inline-flex tw:items-center tw:justify-center tw:rounded-lg tw:border tw:border-blue-500 tw:bg-blue-600 tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:text-white tw:shadow-sm tw:transition-colors tw:hover:bg-blue-500 tw:disabled:cursor-not-allowed tw:disabled:opacity-50 tw:my-3', `Upgrade to ${item.latest}`)
     action.type = 'button'
     action.addEventListener('click', () => previewUpgrade(item))
     pane.append(action)
@@ -414,8 +414,8 @@ async function selectItem(item: DependencyItem) {
     showNotes(state.notes.get(cacheKey)!)
     return
   }
-  const loading = create('div', 'loading-panel')
-  loading.append(create('div', 'skeleton'), create('div', 'skeleton'), create('div', 'skeleton'))
+  const loading = create('div', 'loading-panel tw:grid tw:gap-3 tw:py-5 tw:[&>div]:h-5 tw:[&>div:last-child]:h-24')
+  loading.append(create('div', 'skeleton tw:animate-pulse tw:rounded-lg tw:bg-(--hover)'), create('div', 'skeleton tw:animate-pulse tw:rounded-lg tw:bg-(--hover)'), create('div', 'skeleton tw:animate-pulse tw:rounded-lg tw:bg-(--hover)'))
   pane.append(loading)
   const controller = new AbortController()
   state.notesController = controller
@@ -501,7 +501,7 @@ $('settings-scope').addEventListener('change', () => {
 function settingsMessage(text: string, kind = 'info') {
   const el = $('settings-status')
   el.hidden = !text
-  el.className = `message ${kind}`
+  el.className = `message tw:rounded-xl tw:border tw:px-4 tw:py-3 tw:text-sm tw:leading-relaxed ${kind}`
   el.textContent = text
 }
 function populateSettings(data: SettingsResponse) {
@@ -621,12 +621,12 @@ function renderDiagnostics() {
   parent.replaceChildren()
   const data = state.lastData
   if (!data) {
-    parent.append(create('p', 'subtle', 'No completed scan yet.'))
+    parent.append(create('p', 'subtle tw:text-(--muted)', 'No completed scan yet.'))
     return
   }
   const d = data.diagnostics
   const http = data.scanInfo?.requests
-  const overview = create('div', 'diagnostics-overview')
+  const overview = create('div', 'diagnostics-overview tw:grid tw:grid-cols-[repeat(auto-fit,minmax(110px,1fr))] tw:gap-3')
   for (const [label, value] of [
     ['Dependencies checked', d.total ?? data.items?.length ?? 0],
     ['Network requests', http?.requests ?? '—'],
@@ -634,12 +634,12 @@ function renderDiagnostics() {
     ['Retries', http?.retries ?? '—'],
     ['Request failures', http?.failures ?? '—'],
   ]) {
-    const box = create('div', 'diagnostic-metric')
+    const box = create('div', 'diagnostic-metric tw:grid tw:gap-1 tw:rounded-xl tw:border tw:border-(--border) tw:bg-(--subtle) tw:p-3 tw:[&_small]:text-(--muted) tw:[&_strong]:text-xl')
     box.append(create('small', '', label), create('strong', '', value))
     overview.append(box)
   }
   parent.append(overview, create('h3', '', 'Slowest dependencies'))
-  const table = create('table', 'diagnostic-table')
+  const table = create('table', 'diagnostic-table tw:w-full tw:border-collapse tw:text-left tw:text-xs tw:[&_td]:border-b tw:[&_td]:border-(--border) tw:[&_td]:p-3 tw:[&_th]:border-b tw:[&_th]:border-(--border) tw:[&_th]:p-3 tw:[&_th]:text-(--muted)')
   const head = create('tr')
   for (const column of ['Package / workspace', 'Status', 'Elapsed'])
     head.append(create('th', '', column))
@@ -653,7 +653,7 @@ function renderDiagnostics() {
     row.append(name, create('td', '', entry.status), create('td', '', `${entry.elapsedMs} ms`))
     if (entry.message) {
       row.title = entry.message
-      name.append(create('div', 'diagnostic-reason', entry.message))
+      name.append(create('div', 'diagnostic-reason tw:mt-1 tw:max-w-sm tw:text-xs tw:break-all', entry.message))
     }
     table.append(row)
   }
@@ -667,6 +667,25 @@ $('diagnostics-close').addEventListener('click', () => $('diagnostics-dialog').c
 // Upgrades are strictly opt-in; selections never trigger package-manager execution.
 let pendingUpgrade: UpgradePreview | null = null
 const upgradeDialog = $('upgrade-dialog')
+for (const dialog of document.querySelectorAll('dialog')) {
+  let pressedOutside = false
+  const outside = (event: PointerEvent) => {
+    const rect = dialog.getBoundingClientRect()
+    return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom
+  }
+  dialog.addEventListener('pointerdown', (event) => {
+    pressedOutside = event.target === dialog && outside(event)
+  })
+  dialog.addEventListener('pointerup', (event) => {
+    if (pressedOutside && event.target === dialog && outside(event) && (dialog !== upgradeDialog || !$('upgrade-cancel').disabled))
+      dialog.close()
+    pressedOutside = false
+  })
+  dialog.addEventListener('cancel', (event) => {
+    if (dialog === upgradeDialog && $('upgrade-cancel').disabled)
+      event.preventDefault()
+  })
+}
 async function previewUpgrade(item: DependencyItem) {
   return previewUpgrades([item])
 }
@@ -696,7 +715,7 @@ async function previewUpgrades(items: DependencyItem[]) {
     const chosen = $('upgrade-items')
     chosen.replaceChildren()
     for (const item of data.items)
-      chosen.append(create('div', 'batch-item', `${item.name}: ${item.from} → ${item.to} · ${item.workspace} (${item.section})`))
+      chosen.append(create('div', 'batch-item tw:rounded-lg tw:border tw:p-3 tw:rounded-lg tw:border tw:border-(--border) tw:p-3 tw:text-sm tw:break-all', `${item.name}: ${item.from} → ${item.to} · ${item.workspace} (${item.section})`))
     $('upgrade-command').textContent = data.commands.map(entry => `# ${entry.importer} · ${entry.section}\n${entry.command}`).join('\n\n')
     const git = data.git || { state: 'unknown' }
     const gitBox = $('upgrade-git')
@@ -761,7 +780,7 @@ $('upgrade-confirm').addEventListener('click', async () => {
     })
     const data: UpgradeResponse = await response.json()
     result.hidden = false
-    result.className = `message ${data.ok ? 'info' : 'error'}`
+    result.className = `message tw:rounded-xl tw:border tw:px-4 tw:py-3 tw:text-sm tw:leading-relaxed ${data.ok ? 'info' : 'error'}`
     const completed = (data.results || []).filter(r => r.ok).length
     const failed = (data.results || []).filter(r => !r.ok).length
     const remaining = data.pending || []
@@ -776,17 +795,21 @@ $('upgrade-confirm').addEventListener('click', async () => {
     result.textContent = lines.join('\n')
     if (response.ok && data.ok) {
       button.textContent = 'Completed'
-      state.upgradeSelections.clear()
-      updateBatchToolbar()
-      message(`${pendingUpgrade.items.length} dependencies upgraded. Rescan and run project tests.`)
+      const upgraded = pendingUpgrade.items.length
+      upgradeDialog.close()
+      void scan()
+      message(`${upgraded} dependencies upgraded. Refreshing the list; run your project tests.`)
     }
     else {
       button.textContent = 'Upgrade failed'
+      // Earlier commands may have changed the project even when a later one fails.
+      if (completed > 0)
+        void scan()
     }
   }
   catch (error) {
     result.hidden = false
-    result.className = 'message error'
+    result.className = 'message error tw:rounded-xl tw:border tw:px-4 tw:py-3 tw:text-sm tw:leading-relaxed'
     result.textContent = `Upgrade request failed: ${errorMessage(error)}. Check the terminal and project files.`
     button.textContent = 'Upgrade failed'
   }

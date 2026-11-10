@@ -33,6 +33,72 @@ test('settings and theme controls work', async ({ page }) => {
   await page.getByLabel('Color theme').selectOption('dark')
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
 })
+test('mobile dashboard keeps filters and release notes reachable', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await expect(page.locator('#list .package')).toHaveCount(2)
+  await page.locator('#list .package').filter({ hasText: 'react' }).click()
+  await expect(page.locator('#detail')).toContainText('GitHub releases')
+  await expect(page.locator('#detail')).toBeInViewport()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+})
+test('clicking the backdrop closes dialogs, while clicks inside do not', async ({ page }) => {
+  await page.goto('/')
+  for (const [open, name] of [
+    ['Settings', 'Settings'],
+    ['Diagnostics', 'Diagnostics'],
+  ]) {
+    await page.getByRole('button', { name }).click()
+    const dialog = page.getByRole('dialog', { name: open })
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole('heading', { name: open }).click()
+    await expect(dialog).toBeVisible()
+    await page.mouse.click(2, 2)
+    await expect(dialog).toBeHidden()
+  }
+})
+test('successful upgrade closes the dialog and refreshes the dependency list', async ({ page, request }) => {
+  const scan = await (await request.get('/api/scan')).json()
+  scan.items = scan.items.filter((item: { name: string }) => item.name !== 'react')
+  await page.route('**/api/upgrade/preview', route => route.fulfill({
+    json: {
+      token: 'preview',
+      git: { state: 'clean' },
+      items: [
+        {
+          name: 'react',
+          from: '18',
+          to: '19',
+          workspace: 'fixture',
+          section: 'dependencies',
+        },
+      ],
+      commands: [
+        { command: 'npm install react@19', importer: '.', section: 'dependencies' },
+      ],
+    },
+  }))
+  await page.route('**/api/upgrade/apply', route => route.fulfill({
+    json: {
+      ok: true,
+      results: [
+        { ok: true, command: 'npm install react@19', exitCode: 0 },
+      ],
+    },
+  }))
+  await page.route('**/api/scan/events?fresh=1', route => route.fulfill({
+    contentType: 'text/event-stream',
+    body: `event: complete\ndata: ${JSON.stringify({ result: scan })}\n\n`,
+  }))
+  await page.goto('/')
+  await expect(page.locator('#list .package')).toHaveCount(2)
+  await page.getByLabel(/Select react .* for upgrade/).check()
+  await page.getByRole('button', { name: 'Review selected upgrades' }).click()
+  await page.getByRole('button', { name: 'Upgrade selected' }).click()
+  await expect(page.locator('#upgrade-dialog')).toBeHidden()
+  await expect(page.locator('#list .package')).toHaveCount(1)
+  await expect(page.locator('#list .package')).not.toContainText('react')
+})
 test('scan transport errors remain visible, styled, and retryable', async ({ page }) => {
   await page.route('**/api/scan/events*', route => route.fulfill({ status: 503, contentType: 'text/plain', body: 'Unavailable' }))
   await page.route('**/api/scan', route => route.fulfill({
